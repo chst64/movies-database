@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+  {% block content %}
+<br>
+
+
+
+<div class="row row-cols-1 row-cols-md-5 g-5">
+
+  {% for film in films %}
+    <div class="col" style="width: 13rem">
+      <div class="card shadow">
+        <img class="card-img-top" src="static/images/{{film.imdb}}.jpg" >
+        <div class="card-body">
+        <p class="card-title">
+          <strong><a href={{ url_for('details',id=film.id) }}>{{film.title}}</a></strong>
+        </p>
+          <p class="card-text">{{film.year}}</p>
+          <!-- <p class="card-text">{{film.imdb}}</p> -->
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+
+</div>
+
+
+
+url_for('film_delete', id=film['id']) 
+
+
+
+
+{% endblock %}
+
+

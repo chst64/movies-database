@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<br>
+<div class="container ">
+  <div class= "mx-auto">
+    <p class="rounded-lg font-weight-bold bg-primary text-center display-3">Base datos de peliculas</p>
+
+  </div>
+</div>
+
+{% block title %} 
+<h2> Editando {{ film.titulo }}  </h2>
+<p>
+{% endblock %}
+
+
+   <form action="" method="post">
+        <label for="title">Titulo pelicula</label>
+        <input type="text" id="title" name="title" value="{{film.titulo}}"></input>
+
+        <label for="year">Año de estreno</label>
+        <input type="text" id="year" name="year" value="{{film.year}}"</input>
+
+        <br>
+        <input type="submit" >Aplicar</button>
+    </form>
+
+
+
+
+{

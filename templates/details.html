@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+  <h2>{{film.title}}</h2>
+  
+  <img src="../static/images/{{film.imdb}}.jpg" >
+  <h4>Year: {{ film.year }}</h4>
+  <h4>Imdb: {{ film.imdb }}</h4>
+  <h4>Rate:{{ film.rate }}</h4>
+  <h4>Duration: {{ film.duration }}</h4>
+  <h4>Director: {{ film.director }}</h4>
+  <h4>original_title: {{ film.original_title }}</h4>
+
+  <h4>Cast:</h4>
+  {% for person in cast %}
+  <p> {{person.category}} - {{ person.name }} as {{person.characters }} </p>
+  {% endfor %}
+
+{% endblock %}
+
+
+
