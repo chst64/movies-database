@@ -2,20 +2,53 @@
 
 {% block content %}
 
-  <h2>{{film.title}}</h2>
-  
-  <img src="../static/images/{{film.imdb}}.jpg" >
-  <h4>Year: {{ film.year }}</h4>
-  <h4>Imdb: {{ film.imdb }}</h4>
-  <h4>Rate:{{ film.rate }}</h4>
-  <h4>Duration: {{ film.duration }}</h4>
-  <h4>Director: {{ film.director }}</h4>
-  <h4>original_title: {{ film.original_title }}</h4>
+  <div class="container bg-dark text-white">
+    <div class="row">
+      <div class="col">
+        <img class="m-4" src="../static/images/{{film.imdb}}.jpg" >
+      </div>
 
-  <h4>Cast:</h4>
-  {% for person in cast %}
-  <p> {{person.category}} - {{ person.name }} as {{person.characters }} </p>
-  {% endfor %}
+      <div class="col m-4" bg-primary>
+        <h2><strong>{{film.title}}</strong>({{film.year}})</h2>
+        <h3>Imdb: {{ film.imdb }}</h3>
+        <h3>Puntuacion: {{film.rate}} </h3>
+        <h3>Vista general</h3>
+        
+       <p>Justo penatibus eleifend, congue auctor faucibus, id morbi lectus dis. 
+          Dui posuere consectetur, faucibus risus vulputate, adipiscing ut venenatis lectus. 
+          Quis posuere metus, dapibus pellentesque eu, vestibulum ante laoreet nulla. 
+          Magna quam cras, eget tincidunt eleifend, consequat praesent tortor sagittis. 
+          Vitae posuere amet, consectetur vitae imperdiet, etiam proin nulla tempor. </p> 
+        {% if (directors is defined) and directors %}
+          <h3>Director: {{directors[0].name}} </h3>
+        {% endif %}
+
+      </div>
+    </div>
+  </div>
+
+<!-- *** Reparto *** -->
+
+<h2>Reparto</h2>
+  <div class="row row-cols-1 row-cols-md-5 g-5  ms-1">
+
+    {% for actor in actors %}
+      <div class="col" style="width: 13rem">
+        <div class="card shadow">
+          <img class="card-img-top" src="../static/images/{{actor.nconst}}.webp" >
+          <div class="card-body">
+            <p class="card-title">
+              <strong>{{actor.name}}</strong>
+              <strong>{{actor.nconst}}</strong>
+            {{actor.characters}}
+            </p>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+
 
 {% endblock %}
 

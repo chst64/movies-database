@@ -41,16 +41,26 @@ def get_cast(film_to_get_cast):
     return: list of actors
     """
     print(colorama.Fore.RED + "En get_cast")
-    cast = []
+
+    actors = []
+    directors = []
     for q in PersonFilm.select().where(PersonFilm.film == film_to_get_cast):
-        print(colorama.Fore.RED + str(q))
-        dicc_person = {"name": q.person.name,
+        print(colorama.Fore.RED + str(q.person))
+
+        dicc_person = {"id": q.person.id,
+                       "nconst": q.person.nconst,
+                       "name": q.person.name,
                        "category": q.category,
                        "characters": q.characters}
-        cast.append(dicc_person)
 
-    print(">>> Cast:", cast)
-    return (cast)
+        if q.category == "actor" or q.category == "actress":
+            actors.append(dicc_person)
+        elif q.category == "director":
+            directors.append(dicc_person)
+
+    print(">>> actors:", actors)
+    print(">>> directors:", directors)
+    return (actors, directors)
 
 
 # === Routes ===
@@ -59,7 +69,7 @@ def index():
     """
     Indice de la pagina. De momento no sirve para nada
     """
-    print(colorama.Fore.RED + "Estoy en index")
+    print(colorama.Fore.RED + "I'm in index")
     return render_template('index.html')
 
 
@@ -86,9 +96,9 @@ def details(id):
 
     film = Film.get_by_id(id)
     print(">>>> Film:", film.title)
-    cast = get_cast(film)
+    actors, directors = get_cast(film)
 
-    return render_template('details.html', film=film, cast=cast)
+    return render_template('details.html', film=film, actors=actors, directors=directors)
 
 
 @app.route("/<int:id>/delete")
