@@ -35,6 +35,26 @@ def get_all_films():
     return list_films
 
 
+def get_some_films(busqueda):
+
+    print(colorama.Fore.RED + "En get_some_films()" + "Recibido:" + busqueda)
+    list_films = []
+    for film in Film.select().where(Film.title.contains(busqueda)):
+        print(">>>", film)
+        list_films.append(
+            {"id": film.id,
+             "title": film.title,
+             "imdb": film.imdb,
+             # "director": Person.get_by_id(film.director).name,
+             "year": film.year,
+             "rate": film.rate
+             }
+        )
+   
+    print(colorama.Fore.RED + "list_films: >>")
+    print(list_films)
+    return list_films
+
 def get_cast(film_to_get_cast):
     """
     Get the cast that appears in a film
@@ -78,9 +98,15 @@ def lista_peliculas():
     """
     Indice de la pagina. De momento no sirve para nada
     """
-    print(colorama.Fore.RED + "Viewing list of films")
-    all_films = get_all_films()
-    return render_template('films.html', films=all_films)
+    if request.method == 'GET':
+        print(colorama.Fore.RED + "Viewing list of all films")
+        all_films = get_all_films()
+        return render_template('films.html', films=all_films)
+    elif request.method == 'POST':
+        print(colorama.Fore.RED + "Modo POST")
+        print(request.form['title'])
+        all_films = get_some_films(request.form['title'])
+        return render_template('films.html', films=all_films)
 
 
 @app.route("/<int:id>/edit", methods=["GET", "POST"])
