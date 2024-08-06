@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+  {% block content %}
+<br>
+
+
+<div class="row row-cols-1 row-cols-md-5 g-5 bg-secondary-subtle ms-1">
+
+  {% for film in post_list %}
+
+    <div class="col" style="width: 13rem">
+      <div class="card h-100 shadow">
+        <img class="card-img-top" src="static/images/{{film.imdb}}.jpg" >
+        <div class="card-body">
+        <p class="card-title">
+          <strong><a href={{ url_for('details',id=film.id) }}>{{film.title}}</a></strong>
+        </p>
+          <p class="card-text">{{film.year}}</p>
+          <!-- <p class="card-text">{{film.imdb}}</p> -->
+        </div>
+      </div>
+    </div>
+
+  {% endfor %}
+
+</div>
+
+<!-- *** Paginacion *** -->
+<!-- <h3> Paginacion </h3> -->
+<!-- <hr> -->
+<!-- Estoy en pagina {{ page }} de {{pagination.get_page_count()}} -->
+
+<!--     {% if page > 1 %} -->
+<!--       <a href="./page_peliculas?page={{ page - 1 }}">Prev</a> -->
+<!--     {% endif %} -->
+<!--     {% if page < pagination.get_page_count() %} -->
+<!--       <a href="./page_peliculas?page={{ page + 1 }}">Next</a> -->
+<!--     {% endif %} -->
+<!-- <hr> -->
+
+<!-- *** Paginacion con bootstrap *** -->
+{% if pagination.get_page_count() > 1 %}
+  <ul class="pagination">
+  {% if page-2 > 1 %}
+    <li class="page-item">
+      <a class="page-link" href="./page_peliculas?page={{page-2}}">{{page-2}}</a>
+    </li>
+  {% endif %}
+
+  {% if page-1 > 1 %}
+    <li class="page-item">
+      <a class="page-link" href="./page_peliculas?page={{page-1}}">{{page-1}}</a>
+    </li>
+  {% endif %}
+
+    <li class="page-item active">
+      <a class="page-link" href="#">{{page}} <span class="sr-only">(current)</span></a>
+    </li>
+
+  {% if page+1 < pagination.get_page_count()  %}
+    <li class="page-item">
+      <a class="page-link" href="./page_peliculas?page={{page+1}}">{{page+1}}</a>
+    </li>
+  {% endif %}
+
+  {% if page+2 < pagination.get_page_count()  %}
+    <li class="page-item">
+      <a class="page-link" href="./page_peliculas?page={{page+2}}">{{page+2}}</a>
+    </li>
+  {% endif %}
+
+  </ul>
+{% endif %}
+<hr>
+
+
+
+{% endblock %}
+
+

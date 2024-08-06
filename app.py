@@ -5,12 +5,21 @@ Example of how to use Flask + peewee
 
 Web about films
 
+https://www.movieposterdb.com/
+
+TODO
+* Dividir las consultas en paginas
+* Inspirarse en www.themoviedb.org
+* Menu peliculas / Series / Gente
+* El reparto en una barra horizontal con scroll
+
 """
 
 from flask import Flask, render_template, request, url_for, redirect
 # from peewee import *
 
 from models import Film, Person, Genero, PersonFilm
+from playhouse.flask_utils import object_list
 
 import colorama
 
@@ -107,6 +116,26 @@ def lista_peliculas():
         print(request.form['title'])
         all_films = get_some_films(request.form['title'])
         return render_template('films.html', films=all_films)
+
+
+@app.route('/page_peliculas', methods=['GET', 'POST'])
+def page_peliculas():
+    if request.method == 'GET':
+        q_peli = Film.select()
+        return object_list(
+            'films_page.html',
+            query=q_peli,
+            context_variable='post_list',
+            paginate_by=10)
+
+    elif request.method == 'POST':
+        q_peli = Film.select().where(
+            Film.title.contains(request.form['title']))
+        return object_list(
+            'films_page.html',
+            query=q_peli,
+            context_variable='post_list',
+            paginate_by=10)
 
 
 @app.route("/<int:id>/edit", methods=["GET", "POST"])
