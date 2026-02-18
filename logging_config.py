@@ -69,3 +69,6 @@ def setup_logging(max_size_mb=5, backup_count=3):
     pruebas_file_handler.setFormatter(pruebas_formatter)
 
     logger_pruebas.addHandler(pruebas_file_handler)
+
+    # Los logs CRITICAL y WARNING aparecen tambien en log.pruebas
+    logger.addHandler(pruebas_file_handler)  # Así los logs también van a app.log

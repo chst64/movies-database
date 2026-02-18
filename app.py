@@ -15,13 +15,14 @@ TODO
 
 """
 
+from colorama.initialise import reset_all
 from flask import Flask, render_template, request, url_for, redirect
 # from peewee import *
 
 from models import Film, Person, Genero, PersonFilm
 from playhouse.flask_utils import object_list
 
-import colorama
+from colorama import Fore, Style, init
 
 from logging_config import setup_logging
 import logging
@@ -30,14 +31,18 @@ import logging
 # Inicio de la app Flask
 app = Flask(__name__)
 
+
 # Configurar el logging al iniciar la aplicación
 setup_logging(max_size_mb=5, backup_count=3)
 logger_pruebas = logging.getLogger("pruebas")
+logger = logging.getLogger("main")
+
+logger.warning(Fore.YELLOW + "=== Iniciando aplicacion ===" + Style.RESET_ALL)
 
 
 # === Funciones varias ===
 def get_all_films():
-    logger_pruebas.info(colorama.Fore.GREEN + "En get_all_films()")
+    logger_pruebas.info("En get_all_films()")
     list_films = []
     for film in Film.select():
         list_films.append(
@@ -83,7 +88,7 @@ def get_some_films(busqueda):
             }
         )
 
-    print(colorama.Fore.RED + "list_films: >>")
+    print(Fore.RED + "list_films: >>")
     print(list_films)
     return list_films
 
@@ -93,12 +98,12 @@ def get_cast(film_to_get_cast):
     Get the cast that appears in a film
     return: list of actors
     """
-    print(colorama.Fore.RED + "En get_cast")
+    print(Fore.RED + "En get_cast")
 
     actors = []
     directors = []
     for q in PersonFilm.select().where(PersonFilm.film == film_to_get_cast):
-        print(colorama.Fore.RED + str(q.person))
+        print(Fore.RED + str(q.person))
 
         dicc_person = {
             "id": q.person.id,
@@ -137,24 +142,20 @@ def index():
     """
     Indice de la pagina. De momento no sirve para nada
     """
-    app.logger.warning("Hola desde index(). Este warning va al archivo")
-    app.logger.critical(
-        "Hola desde index(). Este CRITICAL va al archivo Y a la consola"
-    )
     return render_template("index.html")
 
 
 @app.route("/lista_peliculas", methods=["GET", "POST"])
 def lista_peliculas():
     """
-    Indice de la pagina. De momento no sirve para nada
+    Lista todas las peliculas y tambien se puede hacer un busqueda
     """
     if request.method == "GET":
-        print(colorama.Fore.RED + "Viewing list of all films")
+        print(Fore.RED + "Viewing list of all films")
         all_films = get_all_films()
         return render_template("films.html", films=all_films)
     elif request.method == "POST":
-        print(colorama.Fore.RED + "Modo POST")
+        print(Fore.RED + "Modo POST")
         print(request.form["title"])
         all_films = get_some_films(request.form["title"])
         return render_template("films.html", films=all_films)
@@ -165,7 +166,7 @@ def lista_gente():
     """
     Lista de personas
     """
-    print(colorama.Fore.RED + "Viewing list of people")
+    print(Fore.RED + "Viewing list of people")
     all_people = get_all_people()
     return render_template("people.html", people=all_people)
 
@@ -194,7 +195,7 @@ def page_peliculas():
 @app.route("/<int:id>/edit", methods=["GET", "POST"])
 def film_edit(id):
     film = Film.get_by_id(id)
-    print(colorama.Fore.YELLOW + film)
+    print(Fore.YELLOW + film)
 
     return render_template("details.html", film=film)
 
@@ -221,7 +222,7 @@ def person_details(id):
 
 @app.route("/<int:id>/delete")
 def delete(id):
-    print(colorama.Fore.YELLOW + ">>>> Borrando film id:", id)
+    print(Fore.YELLOW + ">>>> Borrando film id:", id)
     film = Film.get_by_id(id)
     film.delete_instance()
 
@@ -232,15 +233,6 @@ def delete(id):
 
 
 if __name__ == "__main__":
-    print(
-        colorama.Fore.RED
-        + """
-       ***************************************
-       * PROGRAMA PRINCIPAL DE BASE DE DATOS *
-       ***************************************
-"""
-    )
-
-    colorama.init(autoreset=True)
+    init(autoreset=True)
 
     app.run(debug=True)
