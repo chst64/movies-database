@@ -24,7 +24,7 @@ class Person(BaseModel):
     birthyear = IntegerField(null=True)
 
     def __str__(self):
-        return f"{self.name}"
+        return f"{self.nconst} - {self.name}"
 
 
 class Film(BaseModel):

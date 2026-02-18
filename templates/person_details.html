@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+  <div class="container bg-dark text-white">
+    <div class="row">
+      <div class="col">
+        <img class="m-4" src="../static/images/{{person.nconst}}.webp" >
+      </div>
+
+      <div class="col m-4" bg-primary>
+        <h2><strong>{{person.name}}</strong>({{person.birthyear}})</h2>
+        <h3>Imdb: {{ person.nconst }}</h3>
+
+      </div>
+    </div>
+  </div>
+
+
+<!-- *** Participa en.. *** -->
+
+<h2>Participa en... </h2>
+
+  <div class="row row-cols-1 row-cols-md-5 g-5  ms-1">
+
+    {% for film in part_of %}
+      <div class="col" style="width: 13rem">
+        <div class="card shadow">
+        <a href={{ url_for('details',id=film.id)}} >
+          <img class="card-img-top" src="../static/images/{{film.imdb}}.jpg" >
+        </a>
+          <div class="card-body">
+            <p class="card-title">
+              <strong>{{film.title}}</strong>
+            </p>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+{% endblock %}
+
+
+

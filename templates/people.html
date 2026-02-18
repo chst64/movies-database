@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+  {% block content %}
+<br>
+
+
+
+<div class="row row-cols-1 row-cols-md-5 g-5 bg-secondary-subtle ms-1">
+
+  {% for person in people %}
+    <div class="col" style="width: 13rem">
+      <div class="card h-100 shadow">
+        <img class="card-img-top" src="static/images/{{person.nconst}}.webp" >
+        <div class="card-body">
+        <p class="card-title">
+          <strong><a href={{ url_for('person_details',id=person.id) }}>{{person.name}}</a></strong>
+          {{person.imdb}}
+        </p>
+          <p class="card-text">{{person.birthday}}</p>
+          <p class="card-text">{{person.nconst}}</p>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+
+</div>
+
+
+
+
+
+{% endblock %}
+
+

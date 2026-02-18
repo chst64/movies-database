@@ -23,46 +23,70 @@ from playhouse.flask_utils import object_list
 
 import colorama
 
+from logging_config import setup_logging
+import logging
+
+
+# Inicio de la app Flask
 app = Flask(__name__)
 
+# Configurar el logging al iniciar la aplicación
+setup_logging(max_size_mb=5, backup_count=3)
+logger_pruebas = logging.getLogger("pruebas")
 
-# === Load the models ===
+
+# === Funciones varias ===
 def get_all_films():
-
-    print(colorama.Fore.RED + "En get_all_films()")
+    logger_pruebas.info(colorama.Fore.GREEN + "En get_all_films()")
     list_films = []
     for film in Film.select():
         list_films.append(
-            {"id": film.id,
-             "title": film.title,
-             "imdb": film.imdb,
-             # "director": Person.get_by_id(film.director).name,
-             "year": film.year,
-             "rate": film.rate
-             }
+            {
+                "id": film.id,
+                "title": film.title,
+                "imdb": film.imdb,
+                # "director": Person.get_by_id(film.director).name,
+                "year": film.year,
+                "rate": film.rate,
+            }
         )
     return list_films
 
 
-def get_some_films(busqueda):
+def get_all_people():
+    list_people = []
+    for person in Person.select()[0:25]:
+        print(">> Tengo:", person)
+        list_people.append(
+            {
+                "id": person.id,
+                "nconst": person.nconst,
+                "name": person.name,
+                "birthyear": person.birthyear,
+            }
+        )
+    return list_people
 
-    print(colorama.Fore.RED + "En get_some_films()" + "Recibido:" + busqueda)
+
+def get_some_films(busqueda):
     list_films = []
     for film in Film.select().where(Film.title.contains(busqueda)):
         print(">>>", film)
         list_films.append(
-            {"id": film.id,
-             "title": film.title,
-             "imdb": film.imdb,
-             # "director": Person.get_by_id(film.director).name,
-             "year": film.year,
-             "rate": film.rate
-             }
+            {
+                "id": film.id,
+                "title": film.title,
+                "imdb": film.imdb,
+                # "director": Person.get_by_id(film.director).name,
+                "year": film.year,
+                "rate": film.rate,
+            }
         )
-   
+
     print(colorama.Fore.RED + "list_films: >>")
     print(list_films)
     return list_films
+
 
 def get_cast(film_to_get_cast):
     """
@@ -76,11 +100,13 @@ def get_cast(film_to_get_cast):
     for q in PersonFilm.select().where(PersonFilm.film == film_to_get_cast):
         print(colorama.Fore.RED + str(q.person))
 
-        dicc_person = {"id": q.person.id,
-                       "nconst": q.person.nconst,
-                       "name": q.person.name,
-                       "category": q.category,
-                       "characters": q.characters}
+        dicc_person = {
+            "id": q.person.id,
+            "nconst": q.person.nconst,
+            "name": q.person.name,
+            "category": q.category,
+            "characters": q.characters,
+        }
 
         if q.category == "actor" or q.category == "actress":
             actors.append(dicc_person)
@@ -92,50 +118,77 @@ def get_cast(film_to_get_cast):
     return (actors, directors)
 
 
+def get_part_of(id):
+    """
+    Devuelve una lista de las peliculas en las que ha participado
+    la persona con 'id', ya sea como actor, director, ...
+    """
+    part_of = []
+    for q in PersonFilm.select().where(PersonFilm.person == id):
+        print(">--> ", q.film)
+        part_of.append(q.film)
+
+    return part_of
+
+
 # === Routes ===
-@app.route('/', methods=['GET', 'POST'])
+@app.route("/", methods=["GET", "POST"])
 def index():
     """
     Indice de la pagina. De momento no sirve para nada
     """
-    print(colorama.Fore.RED + "I'm in index")
-    return render_template('index.html')
+    app.logger.warning("Hola desde index(). Este warning va al archivo")
+    app.logger.critical(
+        "Hola desde index(). Este CRITICAL va al archivo Y a la consola"
+    )
+    return render_template("index.html")
 
 
-@app.route('/lista_peliculas', methods=['GET', 'POST'])
+@app.route("/lista_peliculas", methods=["GET", "POST"])
 def lista_peliculas():
     """
     Indice de la pagina. De momento no sirve para nada
     """
-    if request.method == 'GET':
+    if request.method == "GET":
         print(colorama.Fore.RED + "Viewing list of all films")
         all_films = get_all_films()
-        return render_template('films.html', films=all_films)
-    elif request.method == 'POST':
+        return render_template("films.html", films=all_films)
+    elif request.method == "POST":
         print(colorama.Fore.RED + "Modo POST")
-        print(request.form['title'])
-        all_films = get_some_films(request.form['title'])
-        return render_template('films.html', films=all_films)
+        print(request.form["title"])
+        all_films = get_some_films(request.form["title"])
+        return render_template("films.html", films=all_films)
 
 
-@app.route('/page_peliculas', methods=['GET', 'POST'])
+@app.route("/lista_gente", methods=["GET", "POST"])
+def lista_gente():
+    """
+    Lista de personas
+    """
+    print(colorama.Fore.RED + "Viewing list of people")
+    all_people = get_all_people()
+    return render_template("people.html", people=all_people)
+
+
+@app.route("/page_peliculas", methods=["GET", "POST"])
 def page_peliculas():
-    if request.method == 'GET':
+    if request.method == "GET":
         q_peli = Film.select()
         return object_list(
-            'films_page.html',
+            "films_page.html",
             query=q_peli,
-            context_variable='post_list',
-            paginate_by=10)
+            context_variable="post_list",
+            paginate_by=10,
+        )
 
-    elif request.method == 'POST':
-        q_peli = Film.select().where(
-            Film.title.contains(request.form['title']))
+    elif request.method == "POST":
+        q_peli = Film.select().where(Film.title.contains(request.form["title"]))
         return object_list(
-            'films_page.html',
+            "films_page.html",
             query=q_peli,
-            context_variable='post_list',
-            paginate_by=10)
+            context_variable="post_list",
+            paginate_by=10,
+        )
 
 
 @app.route("/<int:id>/edit", methods=["GET", "POST"])
@@ -143,35 +196,50 @@ def film_edit(id):
     film = Film.get_by_id(id)
     print(colorama.Fore.YELLOW + film)
 
-    return render_template('details.html', film=film)
+    return render_template("details.html", film=film)
 
 
 @app.route("/<int:id>/details", methods=["GET", "POST"])
 def details(id):
-
     film = Film.get_by_id(id)
     print(">>>> Film:", film.title)
     actors, directors = get_cast(film)
 
-    return render_template('details.html', film=film, actors=actors, directors=directors)
+    return render_template(
+        "details.html", film=film, actors=actors, directors=directors
+    )
+
+
+@app.route("/<int:id>/person_details", methods=["GET", "POST"])
+def person_details(id):
+    person = Person.get_by_id(id)
+    part_of = get_part_of(id)
+    print(">>>> person:", person.name)
+
+    return render_template("person_details.html", part_of=part_of, person=person)
 
 
 @app.route("/<int:id>/delete")
 def delete(id):
-
     print(colorama.Fore.YELLOW + ">>>> Borrando film id:", id)
     film = Film.get_by_id(id)
     film.delete_instance()
 
-    return redirect(url_for('lista_peliculas'))
+    return redirect(url_for("lista_peliculas"))
+
 
 # **************************************************
 
 
-if __name__ == '__main__':
-    print("*"*20)
-    print("* PROGRAMA PRINCIPAL DE BASE DE DATOS * ")
-    print("*"*20)
+if __name__ == "__main__":
+    print(
+        colorama.Fore.RED
+        + """
+       ***************************************
+       * PROGRAMA PRINCIPAL DE BASE DE DATOS *
+       ***************************************
+"""
+    )
 
     colorama.init(autoreset=True)
 

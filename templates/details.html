@@ -35,7 +35,9 @@
     {% for actor in actors %}
       <div class="col" style="width: 13rem">
         <div class="card shadow">
+        <a href={{ url_for('person_details',id=actor.id)}} >
           <img class="card-img-top" src="../static/images/{{actor.nconst}}.webp" >
+        </a>
           <div class="card-body">
             <p class="card-title">
               <strong>{{actor.name}}</strong>
