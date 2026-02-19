@@ -61,7 +61,7 @@ def get_all_films():
 def get_all_people():
     list_people = []
     for person in Person.select()[0:25]:
-        print(">> Tengo:", person)
+        logger_pruebas.info(f">> Tengo: {person}")
         list_people.append(
             {
                 "id": person.id,
@@ -76,7 +76,7 @@ def get_all_people():
 def get_some_films(busqueda):
     list_films = []
     for film in Film.select().where(Film.title.contains(busqueda)):
-        print(">>>", film)
+        logger_pruebas.info(f">>> {film}")
         list_films.append(
             {
                 "id": film.id,
@@ -88,8 +88,7 @@ def get_some_films(busqueda):
             }
         )
 
-    print(Fore.RED + "list_films: >>")
-    print(list_films)
+    logger_pruebas.info(Fore.RED + f"list_films: >>\n {list_films}")
     return list_films
 
 
@@ -98,12 +97,12 @@ def get_cast(film_to_get_cast):
     Get the cast that appears in a film
     return: list of actors
     """
-    print(Fore.RED + "En get_cast")
+    logger_pruebas.info("En get_cast")
 
     actors = []
     directors = []
     for q in PersonFilm.select().where(PersonFilm.film == film_to_get_cast):
-        print(Fore.RED + str(q.person))
+        logger_pruebas.info(f"Persona: {q.person.name=} - {q.category=}")
 
         dicc_person = {
             "id": q.person.id,
@@ -118,8 +117,8 @@ def get_cast(film_to_get_cast):
         elif q.category == "director":
             directors.append(dicc_person)
 
-    print(">>> actors:", actors)
-    print(">>> directors:", directors)
+    logger_pruebas.info(">>> actors: {actors}")
+    logger_pruebas.info(f">>> directors: {directors}")
     return (actors, directors)
 
 
@@ -130,7 +129,7 @@ def get_part_of(id):
     """
     part_of = []
     for q in PersonFilm.select().where(PersonFilm.person == id):
-        print(">--> ", q.film)
+        logger_pruebas.info(">--> ", q.film)
         part_of.append(q.film)
 
     return part_of
@@ -151,12 +150,12 @@ def lista_peliculas():
     Lista todas las peliculas y tambien se puede hacer un busqueda
     """
     if request.method == "GET":
-        print(Fore.RED + "Viewing list of all films")
+        logger_pruebas.info("Hola desde lista_peliculas()")
         all_films = get_all_films()
         return render_template("films.html", films=all_films)
     elif request.method == "POST":
-        print(Fore.RED + "Modo POST")
-        print(request.form["title"])
+        logger_pruebas.info("Hola desde lista_peliculas() modo POST")
+        logger_pruebas.info(f"He recibido {request.form['title']=}")
         all_films = get_some_films(request.form["title"])
         return render_template("films.html", films=all_films)
 
@@ -166,7 +165,7 @@ def lista_gente():
     """
     Lista de personas
     """
-    print(Fore.RED + "Viewing list of people")
+    logger_pruebas.info(Fore.RED + "Viewing list of people")
     all_people = get_all_people()
     return render_template("people.html", people=all_people)
 
@@ -195,7 +194,7 @@ def page_peliculas():
 @app.route("/<int:id>/edit", methods=["GET", "POST"])
 def film_edit(id):
     film = Film.get_by_id(id)
-    print(Fore.YELLOW + film)
+    logger_pruebas.info(Fore.YELLOW + film)
 
     return render_template("details.html", film=film)
 
@@ -203,7 +202,7 @@ def film_edit(id):
 @app.route("/<int:id>/details", methods=["GET", "POST"])
 def details(id):
     film = Film.get_by_id(id)
-    print(">>>> Film:", film.title)
+    logger_pruebas.info(f">>>> Film: {film.title}")
     actors, directors = get_cast(film)
 
     return render_template(
@@ -215,14 +214,14 @@ def details(id):
 def person_details(id):
     person = Person.get_by_id(id)
     part_of = get_part_of(id)
-    print(">>>> person:", person.name)
+    logger_pruebas.info(f">>>> person: {person.name}")
 
     return render_template("person_details.html", part_of=part_of, person=person)
 
 
 @app.route("/<int:id>/delete")
 def delete(id):
-    print(Fore.YELLOW + ">>>> Borrando film id:", id)
+    logger.pruebas(Fore.YELLOW + f">>>> Borrando film id: {id}")
     film = Film.get_by_id(id)
     film.delete_instance()
 
